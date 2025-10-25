@@ -1,156 +1,102 @@
-# 🚀 Real-Time People Counting System - Quick Start Guide
+# 🚀 Quick Start Guide
 
-## ✅ System Status: READY TO RUN!
+## ✅ System Ready!
 
-Your real-time people counting system is now fully set up and ready to use. Here's what we've accomplished:
+Your real-time people counting system is fully configured and ready to use.
 
-### ✅ **Successfully Completed:**
-- ✅ **Dependencies Installed**: All required packages installed in virtual environment
-- ✅ **System Configured**: Basic configuration set up for testing
-- ✅ **Bug Fixed**: Fixed critical threading bug in video input handling
-- ✅ **Video Test**: Successfully tested with sample video (61.26 FPS!)
-- ✅ **Documentation**: Comprehensive documentation created in `docs/` folder
+## 🎯 Quick Commands
 
-### 🎯 **Current Configuration:**
-- **Video Source**: Webcam (0) - ready for live camera input
-- **Threshold**: 5 people (configurable)
-- **Threading**: Disabled (due to video file compatibility issues)
-- **Logging**: Enabled (data saved to CSV)
-- **Alerts**: Disabled (can be enabled with email setup)
-
----
-
-## 🚀 **How to Run the System**
-
-### **1. Activate Virtual Environment**
+### **Run with Webcam**
 ```bash
-cd /Users/autoeyes/Project/autoeyes/vision_ai/real_time_people_couting
-source venv/bin/activate
+python people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel
 ```
 
-### **2. Run with Webcam (Live Camera)**
+### **Run with Video File**
 ```bash
-python3 people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel --confidence 0.3
+python people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel --input path/to/video.mp4
 ```
 
-### **3. Run with Video File**
-```bash
-python3 people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel --input path/to/your/video.mp4 --confidence 0.3
-```
-
-### **4. Run with IP Camera**
-Edit `utils/config.json` and set:
+### **Run with IP Camera**
+1. Edit `utils/config.json`:
 ```json
 {
-    "url": "http://your-camera-ip:port/video"
+    "url": "rtsp://username:password@ip:port/stream"
 }
 ```
-Then run:
+2. Run:
 ```bash
-python3 people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel --confidence 0.3
+python people_counter.py --prototxt detector/MobileNetSSD_deploy.prototxt --model detector/MobileNetSSD_deploy.caffemodel
 ```
 
----
-
-## ⚙️ **Configuration Options**
+## ⚙️ Configuration
 
 ### **Basic Settings** (`utils/config.json`)
 ```json
 {
-    "url": "0",                    // "0" for webcam, "http://ip:port/video" for IP camera
-    "Threshold": 5,                // Maximum people limit for alerts
-    "Thread": false,               // Enable threading (disable for video files)
-    "Log": true,                   // Enable CSV data logging
+    "url": "0",                    // 0=webcam, URL=IP camera
     "ALERT": false,                // Enable email alerts
-    "Scheduler": false,            // Enable scheduled execution
-    "Timer": false                 // Enable automatic timer
+    "Threshold": 5,                // People count limit
+    "Thread": true,                // Enable threading
+    "Log": true                    // Enable data logging
 }
 ```
 
-### **Email Alerts Setup**
-To enable email alerts, configure:
-```json
-{
-    "Email_Send": "your-email@gmail.com",
-    "Email_Receive": "recipient@email.com", 
-    "Email_Password": "your-app-password",
-    "ALERT": true
-}
+### **Camera Configuration**
+```bash
+# Create camera config
+python camera_config/camera_manager.py --create
+
+# Test camera connection
+python camera_config/camera_manager.py --test your_config.json
 ```
 
----
+## 📊 Features
 
-## 🎮 **Controls**
-- **Press 'q'**: Quit the application
-- **Real-time Display**: Shows entry/exit counts and current occupancy
-- **Visual Indicators**: 
-  - White circles: Object centroids
-  - Horizontal line: Counting boundary
-  - Object IDs: Unique tracking identifiers
+- **Real-time Detection**: MobileNetSSD person detection
+- **Robust Tracking**: Centroid-based object tracking
+- **Email Alerts**: Automatic notifications when threshold exceeded
+- **Data Logging**: CSV export for analytics
+- **Performance**: Threading support for better FPS
+- **Camera Support**: Dahua RTSP camera integration
 
----
+## 🔧 Troubleshooting
 
-## 📊 **Performance Metrics**
-- **Frame Rate**: 60+ FPS (tested with sample video)
-- **Accuracy**: 90%+ person detection
-- **Memory Usage**: ~300-500MB
-- **CPU Usage**: 30-70% (hardware dependent)
+### **Low FPS**
+- Enable threading: `"Thread": true`
+- Lower confidence: `--confidence 0.3`
+- Reduce skip frames: `--skip-frames 15`
 
----
+### **Camera Issues**
+- Test connection: `python camera_config/camera_manager.py --test config.json`
+- Check RTSP URL format
+- Verify credentials
 
-## 🔧 **Troubleshooting**
+### **Detection Issues**
+- Adjust confidence threshold
+- Check lighting conditions
+- Ensure stable camera position
 
-### **Common Issues:**
+## 📈 Performance Tips
 
-1. **"Couldn't read video stream from file '0'"**
-   - **Solution**: No webcam available. Use `--input video.mp4` for video files
+1. **Use Threading**: Enable for better performance
+2. **Optimize Resolution**: Lower resolution = higher FPS
+3. **Skip Frames**: Adjust based on your needs
+4. **Confidence Threshold**: Lower for more detections
 
-2. **Low FPS Performance**
-   - **Solution**: Reduce `--confidence` to 0.2-0.3, or disable threading
+## 📚 Documentation
 
-3. **Detection Accuracy Issues**
-   - **Solution**: Improve lighting, adjust `--confidence` threshold
+- **Main Guide**: [README.md](./README.md) - Complete system overview
+- **Developer Guide**: [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) - Technical details
+- **Camera Config**: [camera_config/README.md](./camera_config/README.md) - Camera setup
 
-4. **Threading Issues with Video Files**
-   - **Solution**: Set `"Thread": false` in config.json for video files
+## 🎯 Next Steps
 
----
-
-## 📁 **Project Structure**
-```
-real_time_people_couting/
-├── docs/                    # 📚 Complete documentation
-├── detector/                # MobileNetSSD model files
-├── tracker/                 # Tracking algorithms
-├── utils/                   # Configuration and utilities
-├── venv/                    # Virtual environment
-├── people_counter.py        # Main application
-└── README.md               # Basic usage guide
-```
+1. **Test with your camera**: Configure IP camera settings
+2. **Set up alerts**: Configure email notifications
+3. **Customize settings**: Adjust thresholds and parameters
+4. **Monitor performance**: Check FPS and accuracy
+5. **Deploy**: Set up for production use
 
 ---
 
-## 📚 **Documentation**
-- **Complete Guide**: `docs/DOCUMENTATION.md`
-- **Technical Specs**: `docs/TECHNICAL_SPECS.md`
-- **Professional Analysis**: `docs/PROFESSIONAL_ANALYSIS.md`
-- **Navigation**: `docs/README.md`
-
----
-
-## 🎉 **You're All Set!**
-
-Your real-time people counting system is ready for production use. The system successfully:
-- ✅ Detects and tracks people in real-time
-- ✅ Counts entries and exits accurately
-- ✅ Provides visual feedback and logging
-- ✅ Handles multiple input sources
-- ✅ Offers configurable thresholds and alerts
-
-**Next Steps:**
-1. Connect a webcam or IP camera
-2. Run the system with your preferred input source
-3. Configure email alerts if needed
-4. Monitor the CSV logs for analytics
-
-**Happy Counting!** 🎯
+**Need Help?** Check the main README.md for detailed documentation or create an issue in the repository.
