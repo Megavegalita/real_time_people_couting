@@ -1,0 +1,139 @@
+{
+  "_comment": "Camera Configuration Template - Essential Fields Only",
+  "_documentation": "This template contains only the necessary fields for camera operation. Each field is documented below.",
+  
+  "camera_info": {
+    "_comment": "Basic camera identification and metadata",
+    "brand": "Dahua",
+    "_doc_brand": "Camera manufacturer (Dahua, Hikvision, etc.)",
+    
+    "model": "IPC-HFW4431R-Z",
+    "_doc_model": "Specific camera model number for hardware identification",
+    
+    "serial_number": "",
+    "_doc_serial_number": "Unique camera serial number for inventory tracking",
+    
+    "company": "autoeyes",
+    "_doc_company": "Company name for organizational purposes",
+    
+    "alias": "",
+    "_doc_alias": "Friendly name for easy identification (e.g., 'Main Entrance Cam')",
+    
+    "location": "",
+    "_doc_location": "Physical location description (e.g., 'Main Entrance', 'Side Door')",
+    
+    "address": "",
+    "_doc_address": "Full physical address of the store/location (e.g., '123 Main Street, City, State 12345')",
+    
+    "map_location": "",
+    "_doc_map_location": "GPS coordinates or map link for store location (e.g., '40.7128,-74.0060' or 'https://maps.google.com/...')",
+    
+    "installation_date": "",
+    "_doc_installation_date": "Date when camera was installed (YYYY-MM-DD format)"
+  },
+  
+  "connection": {
+    "_comment": "Network connection settings for RTSP stream",
+    "host": "192.168.1.100",
+    "_doc_host": "Camera IP address on the network",
+    
+    "port": 554,
+    "_doc_port": "RTSP port (default: 554)",
+    
+    "username": "admin",
+    "_doc_username": "Camera login username",
+    
+    "password": "password",
+    "_doc_password": "Camera login password",
+    
+    "stream_path": "/cam/realmonitor?channel=1&subtype=0",
+    "_doc_stream_path": "RTSP stream path for main stream (high resolution)",
+    
+    "full_url": "rtsp://admin:password@192.168.1.100:554/cam/realmonitor?channel=1&subtype=0",
+    "_doc_full_url": "Complete RTSP URL for direct connection"
+  },
+  
+  "video_settings": {
+    "_comment": "Video stream configuration",
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "_doc_resolution": "Video resolution in pixels (width x height)",
+    
+    "fps": 25,
+    "_doc_fps": "Frames per second for video stream",
+    
+    "codec": "H.264",
+    "_doc_codec": "Video codec format (H.264, H.265, etc.)"
+  },
+  
+  "detection_settings": {
+    "_comment": "People detection and counting configuration",
+    "roi": {
+      "_comment": "Region of Interest - area where people detection occurs",
+      "enabled": true,
+      "_doc_roi_enabled": "Enable/disable ROI filtering",
+      
+      "coordinates": [
+        {"x": 100, "y": 100},
+        {"x": 800, "y": 100},
+        {"x": 800, "y": 600},
+        {"x": 100, "y": 600}
+      ],
+      "_doc_roi_coordinates": "Polygon coordinates defining detection area (clockwise order)"
+    },
+    
+    "counting_line": {
+      "_comment": "Virtual line for counting people crossings",
+      "enabled": true,
+      "_doc_counting_line_enabled": "Enable/disable counting line",
+      
+      "start_point": {"x": 0, "y": 300},
+      "end_point": {"x": 1920, "y": 300},
+      "_doc_counting_line_points": "Start and end coordinates of counting line",
+      
+      "direction": "bidirectional",
+      "_doc_counting_line_direction": "Counting direction: 'in', 'out', or 'bidirectional'"
+    },
+    
+    "sensitivity": 0.5,
+    "_doc_sensitivity": "Detection sensitivity (0.0 = low, 1.0 = high)",
+    
+    "min_object_size": 30,
+    "_doc_min_object_size": "Minimum object size in pixels to filter noise",
+    
+    "max_object_size": 200,
+    "_doc_max_object_size": "Maximum object size in pixels to filter large objects"
+  },
+  
+  "alerts": {
+    "_comment": "Alert configuration for people counting",
+    "enabled": true,
+    "_doc_alerts_enabled": "Enable/disable alert notifications",
+    
+    "threshold": 5,
+    "_doc_threshold": "People count threshold to trigger alerts",
+    
+    "cooldown_period": 60,
+    "_doc_cooldown_period": "Alert cooldown period in seconds to prevent spam"
+  },
+  
+  "network": {
+    "_comment": "Network configuration and timeouts",
+    "timeout": 30,
+    "_doc_timeout": "Connection timeout in seconds",
+    
+    "retry_attempts": 3,
+    "_doc_retry_attempts": "Number of retry attempts for failed connections"
+  },
+  
+  "maintenance": {
+    "_comment": "Camera maintenance and status tracking",
+    "status": "active",
+    "_doc_status": "Camera status: 'active', 'inactive', 'maintenance'",
+    
+    "health_check_interval": 300,
+    "_doc_health_check_interval": "Health check interval in seconds"
+  }
+}
