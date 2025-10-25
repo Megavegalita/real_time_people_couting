@@ -16,6 +16,15 @@ People Counting in Real-Time using live video stream/IP camera in OpenCV.
 
 --- 
 
+## 📚 Documentation
+
+For comprehensive technical documentation, professional analysis, and detailed specifications, please visit the **[docs/](./docs/)** folder:
+
+- **[📖 Complete Documentation](./docs/DOCUMENTATION.md)** - Full technical reference
+- **[🔧 Technical Specifications](./docs/TECHNICAL_SPECS.md)** - Detailed technical specs
+- **[📊 Professional Analysis](./docs/PROFESSIONAL_ANALYSIS.md)** - Business and technical assessment
+- **[📚 Documentation Index](./docs/README.md)** - Navigation guide
+
 ## Table of Contents
 
 * [Simple Theory](#simple-theory)

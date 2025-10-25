@@ -116,7 +116,11 @@ def people_counter():
 	fps = FPS().start()
 
 	if config["Thread"]:
-		vs = thread.ThreadingClass(config["url"])
+		# Use the same source as the main video stream
+		if not args.get("input", False):
+			vs = thread.ThreadingClass(config["url"])
+		else:
+			vs = thread.ThreadingClass(args["input"])
 
 	# loop over frames from the video stream
 	while True:
