@@ -1,0 +1,40 @@
+{
+  "parallel_config": {
+    "worker_count": 4,
+    "max_workers": 8,
+    "result_output": "parallel/results/",
+    "log_level": "INFO",
+    "skip_frames": 30,
+    "confidence": 0.4
+  },
+  "cameras": [
+    {
+      "camera_id": "camera_01",
+      "source": "0",
+      "alias": "Webcam Test",
+      "location": "Building A - Main Entrance",
+      "threshold": 10,
+      "enabled": true,
+      "type": "webcam"
+    },
+    {
+      "camera_id": "camera_02",
+      "source": "rtsp://username:password@192.168.1.100:554/cam/realmonitor?channel=1&subtype=0",
+      "alias": "IP Camera - Main Entrance",
+      "location": "Building A - Main Entrance",
+      "threshold": 15,
+      "enabled": true,
+      "type": "rtsp"
+    }
+  ],
+  "videos": [
+    {
+      "video_id": "video_01",
+      "path": "utils/data/tests/test_1.mp4",
+      "alias": "Test Video 1",
+      "threshold": 5,
+      "enabled": true
+    }
+  ]
+}
+
