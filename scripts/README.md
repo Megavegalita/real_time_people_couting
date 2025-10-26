@@ -2,7 +2,29 @@
 
 ## 📋 Danh Sách Scripts
 
-### Test Scripts
+### Verification Scripts (scripts/verification/)
+
+1. **verify_accuracy.py**
+   - Verify accuracy của optimized code
+   - So sánh kết quả với original code
+
+2. **benchmark_performance.py**
+   - Đo FPS, memory, CPU usage
+   - So sánh performance trước/sau
+
+3. **comprehensive_verification.py**
+   - Kiểm tra toàn bộ hệ thống
+   - Single vs parallel processing
+   - Tạo comprehensive report
+
+4. **quick_test.py**
+   - Quick validation test
+   - Syntax và import checking
+
+5. **run_quick_verification.sh**
+   - Shell wrapper cho quick test
+
+### Development Test Scripts
 
 1. **test_consistency.py**
    - Test consistency của parallel processing
@@ -31,6 +53,22 @@
 
 ### Cách Sử Dụng
 
+#### Verification Scripts
+```bash
+# Verify accuracy
+python scripts/verification/verify_accuracy.py
+
+# Benchmark performance
+python scripts/verification/benchmark_performance.py
+
+# Comprehensive verification
+python scripts/verification/comprehensive_verification.py
+
+# Quick test
+python scripts/verification/quick_test.py
+```
+
+#### Development Test Scripts
 ```bash
 # Test consistency
 python scripts/test_consistency.py

@@ -16,8 +16,8 @@ class Tracking:
 class Detection:
     """Constants for object detection."""
     CONFIDENCE_THRESHOLD: float = 0.4    # Minimum confidence for detection
-    SKIP_FRAMES: int = 30                # Frames to skip between detections
-    FRAME_WIDTH: int = 500                # Resized frame width
+    SKIP_FRAMES: int = 10                # Frames to skip between detections
+    FRAME_WIDTH: int = 500                  # Resized frame width
     BLOB_SCALE: float = 0.007843         # Blob scaling factor
     BLOB_MEAN: float = 127.5              # Blob mean subtraction
 
