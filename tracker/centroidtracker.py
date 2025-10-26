@@ -1,42 +1,81 @@
 # import the necessary packages
 from scipy.spatial import distance as dist
 from collections import OrderedDict
+from typing import List, Tuple, Dict
 import numpy as np
 
+
 class CentroidTracker:
-	def __init__(self, maxDisappeared=50, maxDistance=50):
+	"""
+	Centroid-based tracker for associating bounding boxes between frames.
+	
+	Uses Euclidean distance between centroids to maintain object identity
+	across frames. Objects are deregistered after maxDisappeared consecutive
+	frames without detection.
+	"""
+	
+	def __init__(self, maxDisappeared: int = 50, maxDistance: int = 50) -> None:
+		"""
+		Initialize centroid tracker.
+		
+		Args:
+			maxDisappeared: Maximum consecutive frames an object can be
+				marked as disappeared before deregistration
+			maxDistance: Maximum distance between centroids for association
+		"""
 		# initialize the next unique object ID along with two ordered
 		# dictionaries used to keep track of mapping a given object
 		# ID to its centroid and number of consecutive frames it has
 		# been marked as "disappeared", respectively
-		self.nextObjectID = 0
-		self.objects = OrderedDict()
-		self.disappeared = OrderedDict()
+		self.nextObjectID: int = 0
+		self.objects: OrderedDict = OrderedDict()
+		self.disappeared: OrderedDict = OrderedDict()
 
 		# store the number of maximum consecutive frames a given
 		# object is allowed to be marked as "disappeared" until we
 		# need to deregister the object from tracking
-		self.maxDisappeared = maxDisappeared
+		self.maxDisappeared: int = maxDisappeared
 
 		# store the maximum distance between centroids to associate
 		# an object -- if the distance is larger than this maximum
 		# distance we'll start to mark the object as "disappeared"
-		self.maxDistance = maxDistance
+		self.maxDistance: int = maxDistance
 
-	def register(self, centroid):
+	def register(self, centroid: Tuple[int, int]) -> None:
+		"""
+		Register a new object with its centroid.
+		
+		Args:
+			centroid: (x, y) coordinates of the object centroid
+		"""
 		# when registering an object we use the next available object
 		# ID to store the centroid
 		self.objects[self.nextObjectID] = centroid
 		self.disappeared[self.nextObjectID] = 0
 		self.nextObjectID += 1
 
-	def deregister(self, objectID):
+	def deregister(self, objectID: int) -> None:
+		"""
+		Deregister an object by removing it from tracking.
+		
+		Args:
+			objectID: ID of the object to deregister
+		"""
 		# to deregister an object ID we delete the object ID from
 		# both of our respective dictionaries
 		del self.objects[objectID]
 		del self.disappeared[objectID]
 
-	def update(self, rects):
+	def update(self, rects: List[Tuple[int, int, int, int]]) -> OrderedDict[int, Tuple[int, int]]:
+		"""
+		Update tracked objects with new bounding boxes.
+		
+		Args:
+			rects: List of bounding boxes as (x1, y1, x2, y2)
+			
+		Returns:
+			OrderedDict mapping object IDs to their current centroids
+		"""
 		# check to see if the list of input bounding box rectangles
 		# is empty
 		if len(rects) == 0:
