@@ -127,10 +127,55 @@ class WorkingProductionSystem:
                 if conf > 0.4 and idx == 15:
                     box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                     (px1, py1, px2, py2) = box.astype("int")
+                    # Store as (x1, y1, w, h) for tracker
                     boxes.append((px1, py1, px2 - px1, py2 - py1))
+                    # Also store original bbox for drawing
+                    # We'll use boxes list index to map back
             
-            # Update tracker
+            # Update tracker  
             objects = self.ct.update(boxes)
+            
+            # IMPORTANT: Properly map objectID to box
+            # Each objectID should map to ONE unique box index
+            
+            # Create a distance matrix: rows = objectIDs, cols = boxes
+            if len(boxes) > 0 and len(objects) > 0:
+                distance_matrix = np.zeros((len(objects), len(boxes)))
+                
+                # Calculate distances
+                for i, (objectID, centroid) in enumerate(objects.items()):
+                    for j, box in enumerate(boxes):
+                        x, y, w_box, h_box = box
+                        box_center = (x + w_box // 2, y + h_box // 2)
+                        distance_matrix[i, j] = np.sqrt(
+                            (centroid[0] - box_center[0])**2 + 
+                            (centroid[1] - box_center[1])**2
+                        )
+                
+                # Use Hungarian-like matching: each objectID gets closest unique box
+                object_to_box_map = {}
+                used_boxes = set()
+                object_list = list(objects.keys())
+                
+                # Sort by distance and assign
+                for object_idx, objectID in enumerate(object_list):
+                    # Find best unmatched box for this object
+                    best_box_idx = None
+                    best_distance = float('inf')
+                    
+                    for box_idx in range(len(boxes)):
+                        if box_idx not in used_boxes:
+                            dist = distance_matrix[object_idx, box_idx]
+                            if dist < best_distance:
+                                best_distance = dist
+                                best_box_idx = box_idx
+                    
+                    # Assign this box to this object
+                    if best_box_idx is not None:
+                        object_to_box_map[objectID] = best_box_idx
+                        used_boxes.add(best_box_idx)
+            else:
+                object_to_box_map = {}
             
             for (objectID, centroid) in objects.items():
                 to = self.trackableObjects.get(objectID, None)
@@ -141,9 +186,10 @@ class WorkingProductionSystem:
                 else:
                     to.centroids.append(centroid)
                 
-                # Get bbox
-                if objectID < len(boxes):
-                    x, y, w_box, h_box = boxes[objectID]
+                # Get the correct box index for this objectID
+                if objectID in object_to_box_map:
+                    box_idx = object_to_box_map[objectID]
+                    x, y, w_box, h_box = boxes[box_idx]
                     
                     # Analyze
                     if objectID not in self.person_data:
