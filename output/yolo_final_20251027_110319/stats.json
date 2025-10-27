@@ -1,9 +1,0 @@
-{
-  "frames_processed": 100,
-  "bodies_detected": 205,
-  "faces_detected": 10,
-  "gender_analyses": 10,
-  "merged_boxes": 9,
-  "total_time": 4.541508197784424,
-  "fps": 22.019116919966155
-}

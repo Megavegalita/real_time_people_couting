@@ -430,7 +430,8 @@ class YOLOFinalSystem:
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
             y += 35
         
-        cv2.imwrite(f"{self.output_dir}/frame_{frame_idx:05d}.jpg", annotated)
+        # Removed: Don't save individual frames
+        # cv2.imwrite(f"{self.output_dir}/frame_{frame_idx:05d}.jpg", annotated)
         self.stats['frames_processed'] += 1
         
         return annotated
