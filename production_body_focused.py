@@ -459,8 +459,9 @@ class BodyFocusedSystem:
 
 if __name__ == "__main__":
     system = BodyFocusedSystem()
+    # Process substantial portion for proper testing
     system.process_video(
         "/Users/autoeyes/Project/autoeyes/vision_ai/real_time_people_couting/utils/data/tests/shopping_korea.mp4",
-        max_frames=100
+        max_frames=500  # Test with 500 frames (20 seconds @ 25fps)
     )
 
