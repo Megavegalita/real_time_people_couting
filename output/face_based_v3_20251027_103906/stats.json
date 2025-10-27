@@ -1,0 +1,11 @@
+{
+  "frames_processed": 100,
+  "detections_count": 153,
+  "face_detections": 8,
+  "gender_analysis_count": 8,
+  "age_analysis_count": 8,
+  "unique_person_ids": 10,
+  "face_not_found_count": 68,
+  "total_time": 5.04474663734436,
+  "fps": 19.822601051901724
+}
