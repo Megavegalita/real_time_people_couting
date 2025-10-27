@@ -1,0 +1,14 @@
+{
+  "frames_processed": 100,
+  "bodies_detected": 205,
+  "faces_detected": 10,
+  "gender_analyses": 0,
+  "age_analyses": 0,
+  "merged_boxes": 9,
+  "deepface_success": 0,
+  "deepface_errors": 10,
+  "total_time": 24.911177396774292,
+  "fps": 4.0142622890618105,
+  "detection_rate": 10.0,
+  "deepface_rate": 0.0
+}
