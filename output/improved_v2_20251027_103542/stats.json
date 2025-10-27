@@ -1,0 +1,9 @@
+{
+  "frames_processed": 100,
+  "detections_count": 153,
+  "gender_analysis_count": 29,
+  "age_analysis_count": 29,
+  "unique_person_ids": 10,
+  "total_time": 2.9489238262176514,
+  "fps": 33.91067585772875
+}
