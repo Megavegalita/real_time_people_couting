@@ -16,6 +16,7 @@ except ImportError:
     mp = None
 
 from config.settings import settings
+from core.services.face_detectors.dnn_face import DNNFaceDetector
 
 
 class FaceDetector:
@@ -175,8 +176,14 @@ class FaceProcessor:
     """
     
     def __init__(self) -> None:
-        """Initialize face processor with detector."""
-        self.detector: FaceDetector = FaceDetector(
+        """Initialize face processor with DNN detector."""
+        # Try DNN first for better detection
+        try:
+            self.detector = DNNFaceDetector(confidence_threshold=0.3, nms_threshold=0.3)
+            print("✅ Using DNN face detector")
+        except Exception as e:
+            print(f"⚠️  DNN not available, using Haar Cascade: {e}")
+            self.detector = FaceDetector(
             min_face_size=settings.face_detection.min_size,
             confidence_threshold=settings.face_detection.confidence
         )
@@ -196,8 +203,13 @@ class FaceProcessor:
         Returns:
             List of (face_crop, detection_info) tuples
         """
-        # Detect faces
-        detections = self.detector.detect_faces(frame)
+        # Detect faces (handle both DNN and Haar Cascade)
+        if isinstance(self.detector, DNNFaceDetector):
+            # DNN detector has detect() method
+            detections = self.detector.detect(frame)
+        else:
+            # Haar Cascade has detect_faces() method
+            detections = self.detector.detect_faces(frame)
         
         # Limit number of faces
         if max_faces and len(detections) > max_faces:
