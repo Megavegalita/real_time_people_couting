@@ -1,0 +1,34 @@
+{
+  "0": {
+    "gender": "unknown",
+    "age": -1,
+    "gender_confidence": 0.0,
+    "age_confidence": 0.0,
+    "status": "failed",
+    "reason": "Feature extraction failed"
+  },
+  "1": {
+    "gender": "unknown",
+    "age": -1,
+    "gender_confidence": 0.0,
+    "age_confidence": 0.0,
+    "status": "failed",
+    "reason": "Feature extraction failed"
+  },
+  "2": {
+    "gender": "unknown",
+    "age": -1,
+    "gender_confidence": 0.0,
+    "age_confidence": 0.0,
+    "status": "failed",
+    "reason": "Feature extraction failed"
+  },
+  "8": {
+    "gender": "unknown",
+    "age": -1,
+    "gender_confidence": 0.0,
+    "age_confidence": 0.0,
+    "status": "failed",
+    "reason": "No face detected"
+  }
+}
