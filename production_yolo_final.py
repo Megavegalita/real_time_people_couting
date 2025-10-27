@@ -252,18 +252,27 @@ class YOLOFinalSystem:
         if face_crop is None or face_crop.size == 0:
             return {'gender': 'UNKNOWN', 'age': -1, 'face_detected': False}
         
-        # Consistent based on track_id
-        import hashlib
-        id_hash = int(hashlib.md5(str(track_id).encode()).hexdigest()[:8], 16)
+        # FIX: Do NOT use hash-based gender (completely wrong!)
+        # TODO: Replace with actual gender classifier or visual heuristics
+        # For now: Use track_id for consistency but acknowledge it's not real
         
-        gender = "MALE" if (id_hash % 2 == 0) else "FEMALE"
-        age = 20 + (id_hash % 30)
+        # Store first-time assignment based on track_id for consistency
+        if track_id not in self.person_data or 'gender' not in self.person_data.get(track_id, {}):
+            # Assign based on track_id modulo for consistency
+            # This is NOT real gender detection, just for demo
+            gender_id = track_id % 2
+            gender = "MALE" if gender_id == 0 else "FEMALE"
+            age = 20 + (track_id % 30)
+            
+            # Log that this is placeholder
+            print(f"⚠️  Warning: Gender assigned to track_id {track_id} is PLACEHOLDER, not real detection")
         
         return {
-            'gender': gender,
-            'age': age,
+            'gender': gender if 'gender' in locals() else 'UNKNOWN',
+            'age': age if 'age' in locals() else -1,
             'face_detected': True,
-            'frame': frame_idx
+            'frame': frame_idx,
+            'is_placeholder': True  # Flag that this is not real detection
         }
     
     def should_re_analyze(self, track_id, frame_idx):
@@ -298,6 +307,40 @@ class YOLOFinalSystem:
         # Track with CentroidTracker
         tracked_objects = self.ct.update(boxes)
         
+        # Create mapping: objectID -> box index
+        if len(boxes) > 0 and len(tracked_objects) > 0:
+            distance_matrix = np.zeros((len(tracked_objects), len(boxes)))
+            object_list = list(tracked_objects.keys())
+            
+            for i, (objectID, centroid) in enumerate(tracked_objects.items()):
+                for j, box in enumerate(boxes):
+                    x, y, w_box, h_box = box
+                    box_center = (x + w_box // 2, y + h_box // 2)
+                    distance_matrix[i, j] = np.sqrt(
+                        (centroid[0] - box_center[0])**2 + 
+                        (centroid[1] - box_center[1])**2
+                    )
+            
+            object_to_box_map = {}
+            used_boxes = set()
+            
+            for object_idx, objectID in enumerate(object_list):
+                best_box_idx = None
+                best_distance = float('inf')
+                
+                for box_idx in range(len(boxes)):
+                    if box_idx not in used_boxes:
+                        dist = distance_matrix[object_idx, box_idx]
+                        if dist < best_distance:
+                            best_distance = dist
+                            best_box_idx = box_idx
+                
+                if best_box_idx is not None:
+                    object_to_box_map[objectID] = best_box_idx
+                    used_boxes.add(best_box_idx)
+        else:
+            object_to_box_map = {}
+        
         # Process each tracked object
         for (objectID, centroid) in tracked_objects.items():
             to = self.trackableObjects.get(objectID, None)
@@ -308,9 +351,10 @@ class YOLOFinalSystem:
             else:
                 to.centroids.append(centroid)
             
-            # Find corresponding box
-            if objectID < len(boxes):
-                x, y, w_box, h_box = boxes[objectID]
+            # Find corresponding box - FIX: Use map
+            if objectID in object_to_box_map:
+                box_idx = object_to_box_map[objectID]
+                x, y, w_box, h_box = boxes[box_idx]
                 
                 # Face detection and analysis
                 if self.should_re_analyze(objectID, frame_idx):
