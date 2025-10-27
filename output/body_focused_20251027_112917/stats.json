@@ -1,0 +1,12 @@
+{
+  "frames_processed": 31391,
+  "bodies_detected": 79211,
+  "faces_detected": 218,
+  "gender_analyses": 930,
+  "age_analyses": 930,
+  "merged_boxes": 3445,
+  "body_based_analyses": 930,
+  "total_time": 769.5430917739868,
+  "fps": 48.09087417663308,
+  "detection_rate": 2.512970168612192
+}
