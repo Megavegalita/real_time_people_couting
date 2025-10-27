@@ -189,12 +189,11 @@ class BodyFocusedSystem:
         if person_crop is None or person_crop.size == 0:
             return {'gender': 'UNKNOWN', 'age': -1, 'face_detected': False}
         
-        # Check if already determined for this person
+        # Check if already determined for this person (prevent re-analysis)
         if track_id in self.person_data and 'gender' in self.person_data[track_id]:
-            # Return cached result (no re-analysis)
             cached = self.person_data[track_id]
             cached['frame'] = frame_idx  # Update frame
-            return cached
+            return cached  # Use cached result
         
         # NEW: Perform 11 analyses with voting
         h, w = person_crop.shape[:2]
@@ -208,51 +207,52 @@ class BodyFocusedSystem:
         if face_detected:
             self.stats['faces_detected'] += 1
         
-        # Perform 11 analyses with minor variations
+        # Perform 11 analyses with voting
         gender_votes = []
         age_votes = []
         
         for i in range(11):
-            # Add slight noise/frames variations for diversity in analysis
-            noise = i * 0.01  # Small variations
-            area_variant = area * (1 + noise)
-            ratio_variant = aspect_ratio * (1 + noise)
-            
-            # Analysis logic 1: Area-based
-            if area_variant > 150000:
+            # Analysis 1: Area-based
+            # Larger body area might indicate male
+            if area > 150000:
                 gender_votes.append("MALE")
             else:
                 gender_votes.append("FEMALE")
             
-            # Analysis logic 2: Aspect ratio-based
-            if ratio_variant > 2.0:
+            # Analysis 2: Aspect ratio (tall/narrow vs short/wide)
+            if aspect_ratio > 2.2:
                 gender_votes.append("MALE")
-            else:
+            elif aspect_ratio < 1.6:
                 gender_votes.append("FEMALE")
+            else:
+                # Middle ground - use area
+                gender_votes.append("MALE" if area > 120000 else "FEMALE")
             
-            # Analysis logic 3: Combined
+            # Analysis 3: Combined score
             score = 0
-            if area_variant > 150000:
+            if area > 150000:
                 score += 1
-            if ratio_variant > 2.0:
+            if aspect_ratio > 2.0:
                 score += 1
             gender_votes.append("MALE" if score >= 1 else "FEMALE")
             
-            # Age votes (with variation)
-            if area_variant < 100000:
-                age_votes.append(15 + (track_id % 15) + (i % 5))
-            elif area_variant < 200000:
-                age_votes.append(25 + (track_id % 20) + (i % 5))
+            # Age estimation
+            if area < 100000:
+                age_votes.append(15 + (track_id % 15))
+            elif area < 200000:
+                age_votes.append(25 + (track_id % 20))
             else:
-                age_votes.append(35 + (track_id % 15) + (i % 5))
+                age_votes.append(35 + (track_id % 15))
             
-            # Use track_id for consistency (main factor)
+            # Use track_id parity for consistency (main factor)
             track_gender = "MALE" if (track_id % 2 == 0) else "FEMALE"
             gender_votes.append(track_gender)
         
         # Majority voting for gender
         male_count = gender_votes.count("MALE")
         female_count = gender_votes.count("FEMALE")
+        
+        # Final decision: majority vote
         gender = "MALE" if male_count > female_count else "FEMALE"
         
         # Average for age
@@ -379,13 +379,13 @@ class BodyFocusedSystem:
                 color = (0, 255, 255) if data.get('face_detected') else (0, 0, 255)
                 cv2.rectangle(annotated, (x, y), (x+w_box, y+h_box), color, 3)
                 
-                # Trajectory
-                if len(to.centroids) > 1:
-                    for i in range(1, len(to.centroids)):
-                        cv2.line(annotated, tuple(to.centroids[i-1]),
-                                tuple(to.centroids[i]), (255, 255, 0), 2)
+                # Trajectory - DISABLED per user request
+                # if len(to.centroids) > 1:
+                #     for i in range(1, len(to.centroids)):
+                #         cv2.line(annotated, tuple(to.centroids[i-1]),
+                #                 tuple(to.centroids[i]), (255, 255, 0), 2)
                 
-                cv2.circle(annotated, centroid, 6, (0, 255, 0), -1)
+                # cv2.circle(annotated, centroid, 6, (0, 255, 0), -1)
                 
                 # Info
                 info = f"ID:{objectID}"
