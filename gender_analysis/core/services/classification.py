@@ -73,6 +73,21 @@ class PersonAnalysisService:
         # Detect face in person crop
         face_results = self.face_processor.process_frame(person_crop)
         
+        # Debug info
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Person {person_id}: processing crop size {person_crop.shape}, face results: {len(face_results)}")
+        
+        if len(face_results) == 0:
+            # Try with full frame for very small crops
+            if person_crop.shape[0] < 50 or person_crop.shape[1] < 50:
+                logger.debug(f"Person {person_id}: Small crop, trying face detection in bbox region")
+                # Try detecting face in the person bbox region of full frame
+                x, y, w, h = bbox
+                person_region = frame[max(0,y-20):min(height,y+h+20), max(0,x-20):min(width,x+w+20)]
+                face_results = self.face_processor.process_frame(person_region)
+                logger.debug(f"Person {person_id}: Full region face results: {len(face_results)}")
+        
         if len(face_results) == 0:
             return self._create_failed_result("No face detected")
         

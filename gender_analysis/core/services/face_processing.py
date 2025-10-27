@@ -76,19 +76,25 @@ class FaceDetector:
         # Convert to grayscale for Haar Cascade
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         
-        # Detect faces
+        # Dynamic min_face_size based on image size
+        img_h, img_w = image.shape[:2]
+        dynamic_min_size = min(img_h, img_w) // 10  # 10% of smallest dimension
+        dynamic_min_size = max(20, min(dynamic_min_size, 50))  # Between 20-50 pixels
+        
+        # Detect faces with more lenient parameters for distant faces
         faces = self.detector.detectMultiScale(
             gray,
-            scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(self.min_face_size, self.min_face_size)
+            scaleFactor=1.15,  # Larger step for efficiency
+            minNeighbors=3,  # Reduced from 5 for better detection
+            minSize=(dynamic_min_size, dynamic_min_size),  # Dynamic size
+            flags=cv2.CASCADE_SCALE_IMAGE
         )
         
         # Format results
         results = []
         for (x, y, w, h) in faces:
-            # Filter by minimum size
-            if w >= self.min_face_size and h >= self.min_face_size:
+            # More lenient size checking for smaller faces
+            if w >= dynamic_min_size and h >= dynamic_min_size:
                 results.append({
                     'box': (int(x), int(y), int(w), int(h)),
                     'confidence': 1.0  # Haar Cascade doesn't provide confidence
